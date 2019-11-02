@@ -2,15 +2,19 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Layout, Input, ContactCard } from "../components";
 
+import ContactsStore from "../mobx/stores/ContactsStore";
 import FavoriteIcon from "../resources/icons/icon-favorite.svg";
 import SortIcon from "../resources/icons/icon-sort.svg";
 import SortReverseIcon from "../resources/icons/icon-sort-reverse.svg";
 
 export default function ContactsPage(props) {
+  const initState = ContactsStore.create()
+  const [contacts, getContacts] = useState(initState)
+
   return (
     <Layout>
       <SSearchPanel>
-        <SSearch>
+        <SSearch>                                                                                                                                                                                                                                                                                                           
           <Input type="text" placeholder="type to search..." />
         </SSearch>
         <SSearchOptions>
