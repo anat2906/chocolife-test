@@ -1,33 +1,86 @@
 import { useObserver } from "mobx-react-lite";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import styled from "styled-components";
+import BASE_URL from "../config/urls";
 import { ContactCard, Input, Layout } from "../components";
-import { contactsStore } from "../mobx/stores/ContactsStore";
+import { ContactsStore } from "../mobx/stores/ContactsStore";
 import FavoriteIcon from "../resources/icons/icon-favorite.svg";
 import SortReverseIcon from "../resources/icons/icon-sort-reverse.svg";
 import SortIcon from "../resources/icons/icon-sort.svg";
 
-export const ContactsPage = () => {
+const contactsStore = ContactsStore.create();
+
+function fetchContacts() {
+  axios
+    .get(BASE_URL)
+    .then(response => {
+      contactsStore.setContacts(response.data.data);
+      return;
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+export function ContactsPage() {
+  useEffect(() => {
+    fetchContacts();
+  }, []);
+
+  const [contacts, setContacts] = useState(contactsStore.contacts);
+
+  function searchContacts(str) {
+    console.log(str);
+    str === ""
+      ? setContacts(contactsStore.contacts)
+      : setContacts(
+          contacts.filter(
+            c =>
+              c.firstName.toLowerCase().startsWith(str.toLowerCase()) |
+              c.lastName.toLowerCase().startsWith(str.toLowerCase())
+          )
+        );
+  }
+
   return useObserver(() => (
     <Layout>
       <SSearchPanel>
         <SSearch>
-          <Input type="text" placeholder="type to search..." />
+          <Input
+            type="text"
+            placeholder="type to search..."
+            onChange={e => {
+              searchContacts(e.target.value);
+            }}
+          />
         </SSearch>
         <SSearchOptions>
-          <SLink>
+          <SLink
+            onClick={e => {
+              setContacts(contactsStore.onlyFavorite);
+            }}
+          >
             <SIcon src={FavoriteIcon} />
           </SLink>
-          <SLink>
+          <SLink
+            onClick={e => {
+              setContacts(contactsStore.alphabetOrder);
+            }}
+          >
             <SIcon src={SortIcon} />
           </SLink>
-          <SLink>
+          <SLink
+            onClick={e => {
+              setContacts(contactsStore.reverseAlphaberOrder);
+            }}
+          >
             <SIcon src={SortReverseIcon} />
           </SLink>
         </SSearchOptions>
       </SSearchPanel>
       <SCardsWrapper>
-        {contactsStore.map(c => {
+        {contacts.map(c => {
           return (
             <SCardWrapper key={c.id}>
               <ContactCard user={c} />
@@ -37,7 +90,7 @@ export const ContactsPage = () => {
       </SCardsWrapper>
     </Layout>
   ));
-};
+}
 
 const SSearchPanel = styled.div`
   width: 100%;

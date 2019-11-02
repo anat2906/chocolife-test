@@ -10,5 +10,5 @@ export const ContactModel = types.model({
   email: types.string,
   website: types.string,
   image: types.string,
-  isFavorite: types.boolean
+  isFavorite: types.optional(types.boolean, false)
 });
