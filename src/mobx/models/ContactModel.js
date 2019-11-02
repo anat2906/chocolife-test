@@ -9,5 +9,6 @@ export const ContactModel = types.model({
   phoneNumber: types.string,
   email: types.string,
   website: types.string,
-  image: types.string
+  image: types.string,
+  isFavorite: types.boolean
 });

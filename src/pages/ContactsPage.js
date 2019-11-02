@@ -1,20 +1,17 @@
-import React, { useState } from "react";
+import { useObserver } from "mobx-react-lite";
+import React from "react";
 import styled from "styled-components";
-import { Layout, Input, ContactCard } from "../components";
-
-import ContactsStore from "../mobx/stores/ContactsStore";
+import { ContactCard, Input, Layout } from "../components";
+import { contactsStore } from "../mobx/stores/ContactsStore";
 import FavoriteIcon from "../resources/icons/icon-favorite.svg";
-import SortIcon from "../resources/icons/icon-sort.svg";
 import SortReverseIcon from "../resources/icons/icon-sort-reverse.svg";
+import SortIcon from "../resources/icons/icon-sort.svg";
 
-export default function ContactsPage(props) {
-  const initState = ContactsStore.create()
-  const [contacts, getContacts] = useState(initState)
-
-  return (
+export const ContactsPage = () => {
+  return useObserver(() => (
     <Layout>
       <SSearchPanel>
-        <SSearch>                                                                                                                                                                                                                                                                                                           
+        <SSearch>
           <Input type="text" placeholder="type to search..." />
         </SSearch>
         <SSearchOptions>
@@ -30,34 +27,17 @@ export default function ContactsPage(props) {
         </SSearchOptions>
       </SSearchPanel>
       <SCardsWrapper>
-        <SCardWrapper>
-          <ContactCard />
-        </SCardWrapper>
-        <SCardWrapper>
-          <ContactCard />
-        </SCardWrapper>
-        <SCardWrapper>
-          <ContactCard />
-        </SCardWrapper>
-        <SCardWrapper>
-          <ContactCard />
-        </SCardWrapper>
-        <SCardWrapper>
-          <ContactCard />
-        </SCardWrapper>
-        <SCardWrapper>
-          <ContactCard />
-        </SCardWrapper>
-        <SCardWrapper>
-          <ContactCard />
-        </SCardWrapper>
-        <SCardWrapper>
-          <ContactCard />
-        </SCardWrapper>
+        {contactsStore.map(c => {
+          return (
+            <SCardWrapper key={c.id}>
+              <ContactCard user={c} />
+            </SCardWrapper>
+          );
+        })}
       </SCardsWrapper>
     </Layout>
-  );
-}
+  ));
+};
 
 const SSearchPanel = styled.div`
   width: 100%;
