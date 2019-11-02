@@ -3,36 +3,52 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 import LikeIcon from "../../resources/icons/icon-like.svg";
+import FavoriteIcon from "../../resources/icons/icon-favorite.svg";
 import LocationIcon from "../../resources/icons/icon-location.svg";
 import PhoneIcon from "../../resources/icons/icon-phone.svg";
 import WebsiteIcon from "../../resources/icons/icon-website.svg";
 import MailIcon from "../../resources/icons/icon-mail.svg";
 
 export default function ContactCard(props) {
+  const {
+    image,
+    firstName,
+    lastName,
+    city,
+    country,
+    phoneNumber,
+    website,
+    email,
+    isFavorite
+  } = props.user;
   return (
     <Link to={"/details"}>
       <SCard>
-        <SImg avatar={props.avatar} />
+        <SImg src={image} />
         <SInfoWrapper>
           <SName>
-            <h5>Vanessa Heartmann</h5>
-            <img src={LikeIcon} />
+            <h5>{`${firstName} ${lastName}`}</h5>
+            {isFavorite ? (
+              <img src={FavoriteIcon} />
+            ) : (
+              <img src={LikeIcon} />
+            )}
           </SName>
           <SContactInfo>
             <img src={LocationIcon} />
-            <span>Address</span>
+            <span>{`${city}, ${country}`}</span>
           </SContactInfo>
           <SContactInfo>
             <img src={PhoneIcon} />
-            <span>+996 555678747</span>
+            <span>{phoneNumber}</span>
           </SContactInfo>
           <SContactInfo>
             <img src={WebsiteIcon} />
-            <span>Website</span>
+            <span>{website}</span>
           </SContactInfo>
           <SContactInfo>
             <img src={MailIcon} />
-            <span>123@mail.com</span>
+            <span>{email}</span>
           </SContactInfo>
         </SInfoWrapper>
       </SCard>
@@ -45,16 +61,9 @@ const SCard = styled.div`
   border-radius: 4px;
 `;
 
-const SImg = styled.div`
+const SImg = styled.img`
   width: 100%;
   height: 134px;
-  background-image: ${props =>
-    props.avatar
-      ? `url(${props.avatar})`
-      : "url(https://images.unsplash.com/photo-1565260524775-7e9b536fba2f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80)"};
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
 `;
 
 const SName = styled.div`
@@ -72,8 +81,8 @@ const SName = styled.div`
     margin: 0;
   }
   img {
-    height: 100%;
-    width: auto;
+    height: 17px;
+    width: 17px;
   }
 `;
 
