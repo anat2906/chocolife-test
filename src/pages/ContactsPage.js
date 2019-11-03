@@ -1,47 +1,21 @@
 import { useObserver } from "mobx-react-lite";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+// eslint-disable-next-line no-unused-vars
+import React, { useEffect } from "react";
 import styled from "styled-components";
-import BASE_URL from "../config/urls";
 import { ContactCard, Input, Layout } from "../components";
-import { ContactsStore } from "../mobx/stores/ContactsStore";
-import FavoriteIcon from "../resources/icons/icon-favorite.svg";
-import SortReverseIcon from "../resources/icons/icon-sort-reverse.svg";
-import SortIcon from "../resources/icons/icon-sort.svg";
+import { contactsStore } from "../mobx";
+import { Link } from "react-router-dom";
 
-const contactsStore = ContactsStore.create();
-
-function fetchContacts() {
-  axios
-    .get(BASE_URL)
-    .then(response => {
-      contactsStore.setContacts(response.data.data);
-      return;
-    })
-    .catch(error => {
-      console.error(error);
-    });
-}
+import {
+  FavouriteIcon,
+  AlphabetSortIcon,
+  ReverseSortIcon
+} from "../components/icons";
 
 export function ContactsPage() {
   useEffect(() => {
-    fetchContacts();
+    contactsStore.getContacts();
   }, []);
-
-  const [contacts, setContacts] = useState(contactsStore.contacts);
-
-  function searchContacts(str) {
-    console.log(str);
-    str === ""
-      ? setContacts(contactsStore.contacts)
-      : setContacts(
-          contacts.filter(
-            c =>
-              c.firstName.toLowerCase().startsWith(str.toLowerCase()) |
-              c.lastName.toLowerCase().startsWith(str.toLowerCase())
-          )
-        );
-  }
 
   return useObserver(() => (
     <Layout>
@@ -50,47 +24,71 @@ export function ContactsPage() {
           <Input
             type="text"
             placeholder="type to search..."
+            value={contactsStore.queryString}
             onChange={e => {
-              searchContacts(e.target.value);
+              contactsStore.setQuerySting(e.target.value);
             }}
           />
         </SSearch>
         <SSearchOptions>
           <SLink
-            onClick={e => {
-              setContacts(contactsStore.onlyFavorite);
+            onClick={() => {
+              contactsStore.toggleFavorite();
             }}
           >
-            <SIcon src={FavoriteIcon} />
+            <SIcon active={contactsStore.isFavorite}>
+              <FavouriteIcon />
+            </SIcon>
           </SLink>
           <SLink
-            onClick={e => {
-              setContacts(contactsStore.alphabetOrder);
+            onClick={() => {
+              contactsStore.setAlphabet();
             }}
           >
-            <SIcon src={SortIcon} />
+            <SIcon active={!contactsStore.isReverse}>
+              <AlphabetSortIcon />
+            </SIcon>
           </SLink>
-          <SLink
-            onClick={e => {
-              setContacts(contactsStore.reverseAlphaberOrder);
-            }}
-          >
-            <SIcon src={SortReverseIcon} />
+          <SLink onClick={() => contactsStore.setReverse()}>
+            <SIcon active={contactsStore.isReverse}>
+              <ReverseSortIcon />
+            </SIcon>
           </SLink>
         </SSearchOptions>
       </SSearchPanel>
       <SCardsWrapper>
-        {contacts.map(c => {
-          return (
-            <SCardWrapper key={c.id}>
-              <ContactCard user={c} />
-            </SCardWrapper>
-          );
-        })}
+        {contactsStore.normaliziedData() &&
+          contactsStore.normaliziedData().length ? (
+            contactsStore.normaliziedData().map(c => {
+              return (
+                <SCardWrapper key={c.id}>
+                  <Link
+                    to={{
+                      pathname: `/details/${c.id}`,
+                      state: {
+                        fromNotifications: true
+                      }
+                    }}
+                  >
+                    <ContactCard user={c} />
+                  </Link>
+                </SCardWrapper>
+              );
+            })
+          ) : (
+            <SMessage>No contacts found :(</SMessage>
+          )}
       </SCardsWrapper>
     </Layout>
   ));
 }
+
+const SMessage = styled.h4`
+  width: 100%;
+  text-align: center;
+  padding-top: 90px;
+  color: rgba(33, 33, 33, 0.75);
+`;
 
 const SSearchPanel = styled.div`
   width: 100%;
@@ -107,9 +105,21 @@ const SSearchOptions = styled.div`
   justify-content: flex-end;
 `;
 
-const SIcon = styled.img`
+const SIcon = styled.div`
   height: 40px;
   width: 40px;
+  svg {
+    width: 100%;
+    height: 100%;
+    fill: ${props => (props.active ? "#FF0000" : "#000000")};
+  }
+  :hover {
+    svg {
+      width: 100%;
+      height: 100%;
+      fill: red;
+    }
+  }
 `;
 
 const SLink = styled.a`
@@ -121,6 +131,7 @@ const SLink = styled.a`
 const SCardsWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
+  justify-contect: center;
 `;
 
 const SCardWrapper = styled.div`

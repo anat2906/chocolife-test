@@ -1,14 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-
-import Logo from "../../resources/icons/icon-my-contacts.svg";
+import { LogoIcon } from "../icons";
 
 export default function Header() {
   return (
     <SHeader>
       <SLink to="/">
-        <SLogo src={Logo} />
+        <SLogo>
+          <LogoIcon />
+        </SLogo>
         <STitle>MyContacts</STitle>
       </SLink>
     </SHeader>
@@ -29,10 +30,14 @@ const STitle = styled.p`
   margin: 0;
 `;
 
-const SLogo = styled.img`
+const SLogo = styled.div`
   height: 32px;
   width: 32px;
   margin-right: 9px;
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const SLink = styled(Link)`

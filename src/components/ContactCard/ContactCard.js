@@ -1,13 +1,14 @@
+// eslint-disable-next-line no-unused-vars
 import React from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
 
-import LikeIcon from "../../resources/icons/icon-like.svg";
-import FavoriteIcon from "../../resources/icons/icon-favorite.svg";
-import LocationIcon from "../../resources/icons/icon-location.svg";
-import PhoneIcon from "../../resources/icons/icon-phone.svg";
-import WebsiteIcon from "../../resources/icons/icon-website.svg";
-import MailIcon from "../../resources/icons/icon-mail.svg";
+import {
+  FavouriteIcon,
+  LocationIcon,
+  PhoneIcon,
+  WebsiteIcon,
+  EmailIcon
+} from "../icons";
 
 export default function ContactCard(props) {
   const {
@@ -22,37 +23,31 @@ export default function ContactCard(props) {
     isFavorite
   } = props.user;
   return (
-    <Link to={"/details"}>
-      <SCard>
-        <SImg src={image} />
-        <SInfoWrapper>
-          <SName>
-            <h5>{`${firstName} ${lastName}`}</h5>
-            {isFavorite ? (
-              <img src={FavoriteIcon} />
-            ) : (
-              <img src={LikeIcon} />
-            )}
-          </SName>
-          <SContactInfo>
-            <img src={LocationIcon} />
-            <span>{`${city}, ${country}`}</span>
-          </SContactInfo>
-          <SContactInfo>
-            <img src={PhoneIcon} />
-            <span>{phoneNumber}</span>
-          </SContactInfo>
-          <SContactInfo>
-            <img src={WebsiteIcon} />
-            <span>{website}</span>
-          </SContactInfo>
-          <SContactInfo>
-            <img src={MailIcon} />
-            <span>{email}</span>
-          </SContactInfo>
-        </SInfoWrapper>
-      </SCard>
-    </Link>
+    <SCard>
+      <SImg image={image} />
+      <SInfoWrapper>
+        <SName>
+          <h5>{`${firstName} ${lastName}`}</h5>
+          <FavouriteIcon favourite={isFavorite} />
+        </SName>
+        <SContactInfo>
+          <LocationIcon />
+          <span>{`${city}, ${country}`}</span>
+        </SContactInfo>
+        <SContactInfo>
+          <PhoneIcon />
+          <span>{phoneNumber}</span>
+        </SContactInfo>
+        <SContactInfo>
+          <WebsiteIcon />
+          <span>{website}</span>
+        </SContactInfo>
+        <SContactInfo>
+          <EmailIcon />
+          <span>{email}</span>
+        </SContactInfo>
+      </SInfoWrapper>
+    </SCard>
   );
 }
 
@@ -61,9 +56,13 @@ const SCard = styled.div`
   border-radius: 4px;
 `;
 
-const SImg = styled.img`
+const SImg = styled.div`
   width: 100%;
   height: 134px;
+  background-image: ${props => `url(${props.image})`};
+  background-position: center;
+  background-size: cover;
+  backgrpund-repeat: no-repeat;
 `;
 
 const SName = styled.div`
@@ -90,7 +89,7 @@ const SContactInfo = styled.div`
   display: flex;
   align-items: center;
   padding-bottom: 6px;
-  img {
+  svg {
     margin-right: 6px;
     height: 100%;
     width: auto;

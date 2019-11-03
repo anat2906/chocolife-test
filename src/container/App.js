@@ -8,7 +8,7 @@ function App() {
     <Router>
       <Switch>
         <Route exact path="/" component={ContactsPage} />
-        <Route exact path="/details" component={ContactDetailsPage} />
+        <Route exact path="/details/:handle" component={ContactDetailsPage} />
       </Switch>
     </Router>
   );
