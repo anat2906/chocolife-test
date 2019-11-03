@@ -6,7 +6,7 @@ import { ContactModel } from "../models/ContactModel";
 export const ContactsStore = types
   .model({
     contacts: types.optional(types.array(ContactModel), []),
-    contact_details: types.optional(types.reference(ContactModel), {}),
+    contact_details: types.optional(types.array(ContactModel), []),
     isReverse: types.optional(types.boolean, false),
     isFavorite: types.optional(types.boolean, false),
     queryString: types.optional(types.string, "")
@@ -38,18 +38,6 @@ export const ContactsStore = types
     },
     setQuerySting(q) {
       self.queryString = q;
-    },
-    setContactsDetails(obj) {
-      self.contact_details = obj;
-    },
-    setFavorite() {
-      self.contact_details.isFavorite = !self.contact_details.isFavorite;
-    },
-    getContactDetails(id) {
-      console.log("getContact", id);
-      const contact = self.contacts.find(c => c.id === id);
-      console.log(self.contacts);
-      this.setContactsDetails(contact);
     }
   }))
   .views(self => ({
@@ -75,5 +63,9 @@ export const ContactsStore = types
       }
 
       return results;
+    },
+    contactDetails(id) {
+      const contact = self.contacts.filter(c => c.id === id);
+      return contact;
     }
   }));

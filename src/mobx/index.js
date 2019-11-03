@@ -10,6 +10,5 @@ if (localStorage.getItem("contactsStore")) {
 export const contactsStore = ContactsStore.create(initialData);
 
 onSnapshot(contactsStore, snapshot => {
-  console.log(snapshot);
   localStorage.setItem("contactsStore", JSON.stringify(snapshot));
 });

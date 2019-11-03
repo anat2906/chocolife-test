@@ -1,16 +1,12 @@
 import { useObserver } from "mobx-react-lite";
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ContactCard, Input, Layout } from "../components";
+import { AlphabetSortIcon, FavouriteIcon, ReverseSortIcon } from "../components/icons";
 import { contactsStore } from "../mobx";
-import { Link } from "react-router-dom";
 
-import {
-  FavouriteIcon,
-  AlphabetSortIcon,
-  ReverseSortIcon
-} from "../components/icons";
 
 export function ContactsPage() {
   useEffect(() => {

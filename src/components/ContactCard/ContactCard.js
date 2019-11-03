@@ -26,9 +26,9 @@ export default function ContactCard(props) {
     <SCard>
       <SImg image={image} />
       <SInfoWrapper>
-        <SName>
+        <SName favourite={isFavorite}>
           <h5>{`${firstName} ${lastName}`}</h5>
-          <FavouriteIcon favourite={isFavorite} />
+          <FavouriteIcon />
         </SName>
         <SContactInfo>
           <LocationIcon />
@@ -79,10 +79,10 @@ const SName = styled.div`
     color: #000000;
     margin: 0;
   }
-  img {
+  svg {
     height: 17px;
     width: 17px;
-  }
+    fill: ${props => (props.favourite ? "red" : "black")}
 `;
 
 const SContactInfo = styled.div`

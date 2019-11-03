@@ -1,5 +1,6 @@
+import { useObserver } from "mobx-react-lite";
 import { Form, Formik } from "formik";
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import * as Yup from "yup";
 import { Button, FormField, Layout } from "../components";
@@ -7,18 +8,19 @@ import { FavouriteIcon } from "../components/icons";
 import { contactsStore } from "../mobx";
 
 export default function ContactDetailsPage(props) {
-  const initialVals = contactsStore.contact_details;
-  useEffect(() => {
-    contactsStore.getContactDetails(props.match.params.handle);
-  }, []);
-  return (
+  const id = Number(props.match.params.handle);
+  let initialVals = contactsStore.contactDetails(id)[0];
+
+  return useObserver(() => (
     <Layout>
       <SAvatarWrapper>
-        <SAvatar avatar={props.avatar} />
+        <SAvatar avatar={initialVals.image} />
         <SFavoriteBtn
+          type="submit"
           onClick={() => {
-            contactsStore.setFavorite();
+            initialVals.toggleFavorite();
           }}
+          favorite={initialVals.isFavorite}
         >
           <FavouriteIcon />
         </SFavoriteBtn>
@@ -28,7 +30,7 @@ export default function ContactDetailsPage(props) {
           initialValues={initialVals}
           validationSchema={ValidationSchema}
           onSubmit={values => {
-            contactsStore.setContactsDetails(values);
+            initialVals.setContactDetails(values);
           }}
         >
           {(errors, touched) => (
@@ -70,7 +72,7 @@ export default function ContactDetailsPage(props) {
         </Formik>
       </SDetailsWrapper>
     </Layout>
-  );
+  ));
 }
 
 const ValidationSchema = Yup.object().shape({
@@ -81,8 +83,12 @@ const ValidationSchema = Yup.object().shape({
   email: Yup.string()
     .email("Please, provide a valid email")
     .required("Email is required"),
-  phoneNumber: Yup.string().required("Phone number is required"),
-  website: Yup.string().required("Website is required")
+  phoneNumber: Yup.string()
+    .required("Phone number is required")
+    .min(10, "Too short number"),
+  website: Yup.string()
+    .required("Website is required")
+    .url("Please, provid a valid link")
 });
 
 const SDetailsWrapper = styled.div`
@@ -113,11 +119,11 @@ const SAvatar = styled.div`
   width: 228px;
   min-width: 228px;
   height: 146px;
-  background-image: url(https://images.unsplash.com/photo-1565260524775-7e9b536fba2f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80);
+  background-image: ${props => `url(${props.avatar})`};
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  background: #ccc;
+  background-color: #ccc;
   border-radius: 4px;
 `;
 
@@ -129,11 +135,11 @@ const SFavoriteBtn = styled.button`
   background: none;
   cursor: pointer;
   svg {
-    fill: ${contactsStore.contact_details.isFavorite ? "red" : "black"};
+    fill: ${props => (props.favorite ? "red" : "black")};
   }
   :hover {
     svg {
-      fill: red;
+      fill: ${props => (props.favorite ? "black" : "red")};
     }
   }
 `;
