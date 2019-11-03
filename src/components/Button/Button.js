@@ -8,7 +8,7 @@ export default function Button(props) {
 const SButton = styled.button`
   width: 100%;
   background: #212121;
-  border: none;
+  border: 2px solid #212121;
   box-shadow: none;
   border-radius: 2px;
   color: white;
@@ -20,4 +20,8 @@ const SButton = styled.button`
   font-style: normal;
   text-align: center;
   cursor: pointer;
+  :hover {
+    background: none;
+    color: #212121;
+  }
 `;

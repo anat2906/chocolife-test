@@ -1,62 +1,89 @@
-import React, { useState } from "react";
+import { Form, Formik } from "formik";
+import React, { useEffect } from "react";
 import styled from "styled-components";
-import { Layout, Input, Button } from "../components";
-
-import FavoriteIcon from "../resources/icons/icon-favorite.svg";
+import * as Yup from "yup";
+import { Button, FormField, Layout } from "../components";
+import { FavouriteIcon } from "../components/icons";
+import { contactsStore } from "../mobx";
 
 export default function ContactDetailsPage(props) {
+  const initialVals = contactsStore.contact_details;
+  useEffect(() => {
+    contactsStore.getContactDetails(props.match.params.handle);
+  }, []);
   return (
     <Layout>
       <SAvatarWrapper>
         <SAvatar avatar={props.avatar} />
-        <a>
-          <SFavoriteBtn src={FavoriteIcon} />
-        </a>
+        <SFavoriteBtn
+          onClick={() => {
+            contactsStore.setFavorite();
+          }}
+        >
+          <FavouriteIcon />
+        </SFavoriteBtn>
       </SAvatarWrapper>
       <SDetailsWrapper>
-        <SInputsWrapper>
-          <SInputWrapper>
-            <SLabel>First Name</SLabel>
-            <Input type="text" placeholder="First Name" />
-          </SInputWrapper>
-          <SInputWrapper>
-            <SLabel>City</SLabel>
-            <Input type="text" placeholder="First Name" />
-          </SInputWrapper>
-        </SInputsWrapper>
-        <SInputsWrapper>
-          <SInputWrapper>
-            <SLabel>Phone Number</SLabel>
-            <Input type="text" placeholder="First Name" />
-          </SInputWrapper>
-          <SInputWrapper>
-            <SLabel>Website</SLabel>
-            <Input type="text" placeholder="First Name" />
-          </SInputWrapper>
-        </SInputsWrapper>
-        <SInputsWrapper>
-          <SInputWrapper>
-            <SLabel>Last Name</SLabel>
-            <Input type="text" placeholder="First Name" />
-          </SInputWrapper>
-          <SInputWrapper>
-            <SLabel>Country</SLabel>
-            <Input type="text" placeholder="First Name" />
-          </SInputWrapper>
-        </SInputsWrapper>
-        <SInputsWrapper>
-          <SInputWrapper>
-            <SLabel>Email</SLabel>
-            <Input type="text" placeholder="First Name" />
-          </SInputWrapper>
-          <SInputWrapper>
-            <Button small>Save Contact</Button>
-          </SInputWrapper>
-        </SInputsWrapper>
+        <Formik
+          initialValues={initialVals}
+          validationSchema={ValidationSchema}
+          onSubmit={values => {
+            contactsStore.setContactsDetails(values);
+          }}
+        >
+          {(errors, touched) => (
+            <Form>
+              <SInputsWrapper>
+                <SInputWrapper>
+                  <FormField name="firstName" label="First Name" />
+                </SInputWrapper>
+                <SInputWrapper>
+                  <FormField name="city" label="City" />
+                </SInputWrapper>
+              </SInputsWrapper>
+              <SInputsWrapper>
+                <SInputWrapper>
+                  <FormField name="phoneNumber" label="Phone Number" />
+                </SInputWrapper>
+                <SInputWrapper>
+                  <FormField name="website" label="Website" />
+                </SInputWrapper>
+              </SInputsWrapper>
+              <SInputsWrapper>
+                <SInputWrapper>
+                  <FormField name="lastName" label="Last Name" />
+                </SInputWrapper>
+                <SInputWrapper>
+                  <FormField name="country" label="Country" />
+                </SInputWrapper>
+              </SInputsWrapper>
+              <SInputsWrapper>
+                <SInputWrapper>
+                  <FormField name="email" label="Email" />
+                </SInputWrapper>
+                <SInputWrapper>
+                  <Button type="submit">Save Contact</Button>
+                </SInputWrapper>
+              </SInputsWrapper>
+            </Form>
+          )}
+        </Formik>
       </SDetailsWrapper>
     </Layout>
   );
 }
+
+const ValidationSchema = Yup.object().shape({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  city: Yup.string().required("City is required"),
+  country: Yup.string().required("Country is required"),
+  email: Yup.string()
+    .email("Please, provide a valid email")
+    .required("Email is required"),
+  phoneNumber: Yup.string().required("Phone number is required"),
+  website: Yup.string().required("Website is required")
+});
 
 const SDetailsWrapper = styled.div`
   display: flex;
@@ -94,16 +121,19 @@ const SAvatar = styled.div`
   border-radius: 4px;
 `;
 
-const SFavoriteBtn = styled.img`
+const SFavoriteBtn = styled.button`
   width: 70px;
   height: 64.4px;
   margin-left: 26px;
-`;
-
-const SLabel = styled.label`
-  font-style: normal;
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 18px;
-  color: rgba(33, 33, 33, 0.75);
+  border: none;
+  background: none;
+  cursor: pointer;
+  svg {
+    fill: ${contactsStore.contact_details.isFavorite ? "red" : "black"};
+  }
+  :hover {
+    svg {
+      fill: red;
+    }
+  }
 `;

@@ -6,13 +6,13 @@ import { ContactModel } from "../models/ContactModel";
 export const ContactsStore = types
   .model({
     contacts: types.optional(types.array(ContactModel), []),
+    contact_details: types.optional(types.reference(ContactModel), {}),
     isReverse: types.optional(types.boolean, false),
     isFavorite: types.optional(types.boolean, false),
     queryString: types.optional(types.string, "")
   })
   .actions(self => ({
     getContacts() {
-      console.log("getContacts");
       if (self.contacts && self.contacts.length) return;
       axios
         .get(BASE_URL)
@@ -38,6 +38,18 @@ export const ContactsStore = types
     },
     setQuerySting(q) {
       self.queryString = q;
+    },
+    setContactsDetails(obj) {
+      self.contact_details = obj;
+    },
+    setFavorite() {
+      self.contact_details.isFavorite = !self.contact_details.isFavorite;
+    },
+    getContactDetails(id) {
+      console.log("getContact", id);
+      const contact = self.contacts.find(c => c.id === id);
+      console.log(self.contacts);
+      this.setContactsDetails(contact);
     }
   }))
   .views(self => ({

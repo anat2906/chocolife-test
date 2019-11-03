@@ -62,14 +62,7 @@ export function ContactsPage() {
             contactsStore.normaliziedData().map(c => {
               return (
                 <SCardWrapper key={c.id}>
-                  <Link
-                    to={{
-                      pathname: `/details/${c.id}`,
-                      state: {
-                        fromNotifications: true
-                      }
-                    }}
-                  >
+                  <Link to={`/details/${c.id}`}>
                     <ContactCard user={c} />
                   </Link>
                 </SCardWrapper>
